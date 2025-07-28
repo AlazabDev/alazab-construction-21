@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { useAuthOperations } from '@/hooks/useAuth';
 import AuthCard from './AuthCard';
 
 interface ResetPasswordFormProps {
@@ -14,20 +14,25 @@ interface ResetPasswordFormProps {
 const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onSwitchToLogin }) => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const { resetPassword } = useAuthOperations();
 
   const handleResetPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/reset-password`,
-      });
+      const { error } = await resetPassword(email);
 
       if (error) {
+        let errorMessage = 'حدث خطأ في إرسال رابط الاستعادة';
+        
+        if (error.message.includes('not found')) {
+          errorMessage = 'البريد الإلكتروني غير موجود';
+        }
+
         toast({
           title: "خطأ في إرسال رابط الاستعادة",
-          description: error.message,
+          description: errorMessage,
           variant: "destructive",
         });
       } else {
@@ -35,8 +40,10 @@ const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ onSwitchToLogin }
           title: "تم الإرسال بنجاح",
           description: "تم إرسال رابط استعادة كلمة المرور إلى بريدك الإلكتروني",
         });
+        setEmail('');
       }
     } catch (error) {
+      console.error('Reset password error:', error);
       toast({
         title: "خطأ غير متوقع",
         description: "حدث خطأ أثناء إرسال رابط الاستعادة",

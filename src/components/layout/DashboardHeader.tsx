@@ -11,30 +11,47 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Bell, LogOut, Settings, User } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth, useAuthOperations } from '@/hooks/useAuth';
 import { toast } from "@/hooks/use-toast";
 import { useNavigate } from 'react-router-dom';
 
 export function DashboardHeader() {
   const { user } = useAuth();
+  const { signOut } = useAuthOperations();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
-      toast({
-        title: "تم تسجيل الخروج بنجاح",
-        description: "تم تسجيل خروجك من النظام",
-      });
-      navigate('/');
+      const { error } = await signOut();
+      
+      if (error) {
+        toast({
+          title: "خطأ في تسجيل الخروج",
+          description: "حدث خطأ أثناء تسجيل الخروج",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "تم تسجيل الخروج بنجاح",
+          description: "تم تسجيل خروجك من النظام",
+        });
+        navigate('/auth');
+      }
     } catch (error) {
+      console.error('Logout error:', error);
       toast({
         title: "خطأ في تسجيل الخروج",
         description: "حدث خطأ أثناء تسجيل الخروج",
         variant: "destructive",
       });
     }
+  };
+
+  const getUserDisplayName = () => {
+    if (user?.user_metadata?.full_name) {
+      return user.user_metadata.full_name;
+    }
+    return user?.email?.split('@')[0] || 'مستخدم';
   };
 
   return (
@@ -58,12 +75,12 @@ export function DashboardHeader() {
                   <Avatar className="w-8 h-8">
                     <AvatarImage src="" />
                     <AvatarFallback className="bg-construction-primary text-white">
-                      {user?.email?.charAt(0).toUpperCase()}
+                      {getUserDisplayName().charAt(0).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className="text-right">
-                    <p className="text-sm font-medium">{user?.email}</p>
-                    <p className="text-xs text-gray-500">مدير النظام</p>
+                    <p className="text-sm font-medium">{getUserDisplayName()}</p>
+                    <p className="text-xs text-gray-500">{user?.email}</p>
                   </div>
                 </div>
               </Button>

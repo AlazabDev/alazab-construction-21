@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { useAuthOperations } from '@/hooks/useAuth';
 import AuthCard from './AuthCard';
 
 interface SignupFormProps {
@@ -17,9 +17,11 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin, onSuccess }) =
     email: '',
     password: '',
     confirmPassword: '',
-    name: ''
+    fullName: '',
+    phone: ''
   });
   const [loading, setLoading] = useState(false);
+  const { signUp } = useAuthOperations();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({
@@ -42,22 +44,38 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin, onSuccess }) =
       return;
     }
 
-    try {
-      const { error } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-        options: {
-          data: {
-            name: formData.name,
-          },
-          emailRedirectTo: `${window.location.origin}/`,
-        }
+    if (formData.password.length < 6) {
+      toast({
+        title: "كلمة المرور ضعيفة",
+        description: "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
+        variant: "destructive",
       });
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const { data, error } = await signUp(
+        formData.email,
+        formData.password,
+        {
+          full_name: formData.fullName,
+          phone: formData.phone,
+        }
+      );
 
       if (error) {
+        let errorMessage = 'حدث خطأ في إنشاء الحساب';
+        
+        if (error.message.includes('already registered')) {
+          errorMessage = 'البريد الإلكتروني مسجل مسبقاً';
+        } else if (error.message.includes('weak password')) {
+          errorMessage = 'كلمة المرور ضعيفة';
+        }
+
         toast({
           title: "خطأ في إنشاء الحساب",
-          description: error.message,
+          description: errorMessage,
           variant: "destructive",
         });
       } else {
@@ -68,6 +86,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin, onSuccess }) =
         onSuccess();
       }
     } catch (error) {
+      console.error('Signup error:', error);
       toast({
         title: "خطأ غير متوقع",
         description: "حدث خطأ أثناء إنشاء الحساب",
@@ -82,15 +101,16 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin, onSuccess }) =
     <AuthCard title="إنشاء حساب جديد">
       <form onSubmit={handleSignup} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="name">الاسم الكامل</Label>
+          <Label htmlFor="fullName">الاسم الكامل</Label>
           <Input
-            id="name"
-            name="name"
+            id="fullName"
+            name="fullName"
             type="text"
-            value={formData.name}
+            value={formData.fullName}
             onChange={handleChange}
             required
             className="text-right"
+            placeholder="أدخل اسمك الكامل"
           />
         </div>
 
@@ -105,6 +125,21 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin, onSuccess }) =
             required
             className="text-right"
             dir="ltr"
+            placeholder="أدخل بريدك الإلكتروني"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="phone">رقم الهاتف (اختياري)</Label>
+          <Input
+            id="phone"
+            name="phone"
+            type="tel"
+            value={formData.phone}
+            onChange={handleChange}
+            className="text-right"
+            dir="ltr"
+            placeholder="05xxxxxxxx"
           />
         </div>
         
@@ -119,6 +154,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin, onSuccess }) =
             required
             className="text-right"
             dir="ltr"
+            placeholder="أدخل كلمة المرور (6 أحرف على الأقل)"
           />
         </div>
 
@@ -133,6 +169,7 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin, onSuccess }) =
             required
             className="text-right"
             dir="ltr"
+            placeholder="أعد إدخال كلمة المرور"
           />
         </div>
 

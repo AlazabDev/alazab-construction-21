@@ -3,8 +3,8 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { useAuthOperations } from '@/hooks/useAuth';
 import AuthCard from './AuthCard';
 
 interface LoginFormProps {
@@ -17,21 +17,27 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignup, onSwitchToReset
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const { signIn } = useAuthOperations();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const { data, error } = await signIn(email, password);
 
       if (error) {
+        let errorMessage = 'حدث خطأ في تسجيل الدخول';
+        
+        if (error.message.includes('Invalid login credentials')) {
+          errorMessage = 'البريد الإلكتروني أو كلمة المرور غير صحيحة';
+        } else if (error.message.includes('Email not confirmed')) {
+          errorMessage = 'يرجى تأكيد بريدك الإلكتروني أولاً';
+        }
+
         toast({
           title: "خطأ في تسجيل الدخول",
-          description: error.message,
+          description: errorMessage,
           variant: "destructive",
         });
       } else {
@@ -42,6 +48,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignup, onSwitchToReset
         onSuccess();
       }
     } catch (error) {
+      console.error('Login error:', error);
       toast({
         title: "خطأ غير متوقع",
         description: "حدث خطأ أثناء تسجيل الدخول",
@@ -65,6 +72,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignup, onSwitchToReset
             required
             className="text-right"
             dir="ltr"
+            placeholder="أدخل بريدك الإلكتروني"
           />
         </div>
         
@@ -78,6 +86,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignup, onSwitchToReset
             required
             className="text-right"
             dir="ltr"
+            placeholder="أدخل كلمة المرور"
           />
         </div>
 
