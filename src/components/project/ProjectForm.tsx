@@ -99,11 +99,35 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
 
   const onSubmit = async (data: ProjectFormValues) => {
     try {
+      // تحويل البيانات إلى التنسيق المتوقع من قاعدة البيانات
+      const projectData = {
+        name: data.name,
+        category: data.category,
+        location: data.location,
+        area: data.area || "",
+        work_type: data.work_type || "",
+        image: data.image,
+        description: data.description || "",
+        status: data.status || "planning",
+        model3d_url: data.model3d_url || "",
+        progress: data.progress || 0,
+        budget: data.budget || 0,
+        start_date: data.start_date || "",
+        end_date: data.end_date || "",
+        client_name: data.client_name || "",
+        engineer_name: data.engineer_name || "",
+        project_number: data.project_number || "",
+        order_number: data.order_number || "",
+        tags: data.tags || "",
+        notes: data.notes || "",
+        assigned_to: "", // إضافة القيم المطلوبة من قاعدة البيانات
+      };
+
       if (isEditing && initialData?.id) {
         // تحديث مشروع موجود
         const { error } = await supabase
           .from('projects')
-          .update(data)
+          .update(projectData)
           .eq('id', initialData.id);
 
         if (error) throw error;
@@ -116,7 +140,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         // إضافة مشروع جديد
         const { error } = await supabase
           .from('projects')
-          .insert([data]);
+          .insert(projectData);
 
         if (error) throw error;
 
