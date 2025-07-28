@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -29,6 +30,8 @@ const projectFormSchema = z.object({
   location: z.string().min(2, {
     message: "يرجى إدخال موقع المشروع",
   }),
+  area: z.string().optional(),
+  work_type: z.string().optional(),
   image: z.string().url({
     message: "يرجى إدخال رابط صورة صالح"
   }),
@@ -40,6 +43,15 @@ const projectFormSchema = z.object({
     message: "يرجى إدخال رابط نموذج ثلاثي الأبعاد صالح" 
   }).optional().or(z.literal('')),
   progress: z.coerce.number().min(0).max(100).optional(),
+  budget: z.coerce.number().min(0).optional(),
+  start_date: z.string().optional(),
+  end_date: z.string().optional(),
+  client_name: z.string().optional(),
+  engineer_name: z.string().optional(),
+  project_number: z.string().optional(),
+  order_number: z.string().optional(),
+  tags: z.string().optional(),
+  notes: z.string().optional(),
 });
 
 // تعريف نوع البيانات مع استخراج النوع من مخطط Zod
@@ -66,11 +78,22 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
       name: initialData?.name || "",
       category: initialData?.category || "",
       location: initialData?.location || "",
+      area: initialData?.area || "",
+      work_type: initialData?.work_type || "",
       image: initialData?.image || "",
       description: initialData?.description || "",
-      status: initialData?.status || "جديد",
+      status: initialData?.status || "planning",
       model3d_url: initialData?.model3d_url || "",
       progress: initialData?.progress || 0,
+      budget: initialData?.budget || 0,
+      start_date: initialData?.start_date || "",
+      end_date: initialData?.end_date || "",
+      client_name: initialData?.client_name || "",
+      engineer_name: initialData?.engineer_name || "",
+      project_number: initialData?.project_number || "",
+      order_number: initialData?.order_number || "",
+      tags: initialData?.tags || "",
+      notes: initialData?.notes || "",
     },
   });
 
@@ -91,10 +114,9 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
         });
       } else {
         // إضافة مشروع جديد
-        const { data: insertedData, error } = await supabase
+        const { error } = await supabase
           .from('projects')
-          .insert([data])
-          .select();
+          .insert([data]);
 
         if (error) throw error;
 
@@ -160,19 +182,35 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
           />
         </div>
 
-        <FormField
-          control={form.control}
-          name="location"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>موقع المشروع *</FormLabel>
-              <FormControl>
-                <Input placeholder="أدخل موقع المشروع" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
+            name="location"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>موقع المشروع *</FormLabel>
+                <FormControl>
+                  <Input placeholder="أدخل موقع المشروع" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="area"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>المساحة</FormLabel>
+                <FormControl>
+                  <Input placeholder="أدخل مساحة المشروع" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
@@ -212,6 +250,36 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
             )}
           />
         </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
+            name="client_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>اسم العميل</FormLabel>
+                <FormControl>
+                  <Input placeholder="أدخل اسم العميل" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="engineer_name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>اسم المهندس</FormLabel>
+                <FormControl>
+                  <Input placeholder="أدخل اسم المهندس المسؤول" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
         
         <FormField
           control={form.control}
@@ -245,6 +313,7 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
+                    <SelectItem value="planning">التخطيط</SelectItem>
                     <SelectItem value="جديد">جديد</SelectItem>
                     <SelectItem value="قيد التنفيذ">قيد التنفيذ</SelectItem>
                     <SelectItem value="مكتمل">مكتمل</SelectItem>
@@ -276,6 +345,70 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
                       {field.value}%
                     </span>
                   </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
+            name="budget"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>الميزانية</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number" 
+                    placeholder="أدخل الميزانية المقدرة" 
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="work_type"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>نوع العمل</FormLabel>
+                <FormControl>
+                  <Input placeholder="أدخل نوع العمل" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            control={form.control}
+            name="start_date"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>تاريخ البداية</FormLabel>
+                <FormControl>
+                  <Input type="date" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="end_date"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>تاريخ الانتهاء</FormLabel>
+                <FormControl>
+                  <Input type="date" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

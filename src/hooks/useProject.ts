@@ -33,7 +33,33 @@ export const useProject = (projectId: string | undefined) => {
 
       if (error) throw error;
       
-      setProject(data);
+      // تحويل البيانات إلى تنسيق Project المطلوب
+      const projectData: Project = {
+        id: data.id,
+        name: data.name || '',
+        description: data.description || '',
+        location: data.location || '',
+        area: data.area || '',
+        category: data.category || '',
+        work_type: data.work_type || '',
+        status: data.status || 'جديد',
+        progress: data.progress || 0,
+        budget: data.budget || 0,
+        start_date: data.start_date || '',
+        end_date: data.end_date || '',
+        client_name: data.client_name || '',
+        engineer_name: data.engineer_name || '',
+        assigned_to: data.assigned_to || '',
+        project_number: data.project_number || '',
+        order_number: data.order_number || '',
+        image: data.image || '',
+        model3d_url: data.model3d_url || '',
+        tags: data.tags || '',
+        notes: data.notes || '',
+        created_at: data.created_at || ''
+      };
+      
+      setProject(projectData);
     } catch (error) {
       console.error("Error fetching project details:", error);
       toast({

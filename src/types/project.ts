@@ -1,16 +1,26 @@
+
 // src/types/project.ts
 export interface Project {
   id: string;
   name: string;
   description: string;
-  status: 'جديد' | 'قيد التنفيذ' | 'مكتمل' | 'متوقف';
+  location: string;
+  area: string;
+  category: string;
+  work_type: string;
+  status: string;
+  progress: number;
+  budget: number;
   start_date: string;
   end_date: string;
+  client_name: string;
+  engineer_name: string;
+  assigned_to: string;
+  project_number: string;
+  order_number: string;
+  image: string;
+  model3d_url: string;
+  tags: string;
+  notes: string;
   created_at: string;
-  progress: number;
-  client_name: string; // أضف هذه الخاصية
-  client_id?: string;
-  budget?: number;
-  model3d_url?: string;
-  // يمكنك إضافة خصائص أخرى حسب الحاجة
 }
