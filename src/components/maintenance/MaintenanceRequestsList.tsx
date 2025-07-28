@@ -11,8 +11,7 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from "@/components/ui/use-toast";
+import { useMaintenanceRequests } from './hooks/useMaintenanceRequests';
 
 interface MaintenanceRequestsListProps {
   requests: MaintenanceRequestSummary[];
@@ -37,22 +36,6 @@ const getStatusColor = (status: string) => {
   }
 };
 
-const getStatusText = (status: string) => {
-  switch (status?.toLowerCase()) {
-    case 'pending':
-      return 'قيد الانتظار';
-    case 'in progress':
-    case 'in-progress':
-      return 'قيد التنفيذ';
-    case 'completed':
-      return 'مكتمل';
-    case 'cancelled':
-      return 'ملغي';
-    default:
-      return status || 'غير معروف';
-  }
-};
-
 const formatDate = (dateString: string) => {
   if (!dateString) return 'غير محدد';
   return new Date(dateString).toLocaleDateString('ar-SA');
@@ -66,6 +49,7 @@ const MaintenanceRequestsList: React.FC<MaintenanceRequestsListProps> = ({
 }) => {
   const navigate = useNavigate();
   const [updatingStatus, setUpdatingStatus] = useState<Record<string, boolean>>({});
+  const { updateRequestStatus, getStatusText } = useMaintenanceRequests();
 
   const viewRequestDetails = (requestId: string) => {
     navigate(`/maintenance-tracking?requestNumber=${requestId}`);
@@ -75,34 +59,7 @@ const MaintenanceRequestsList: React.FC<MaintenanceRequestsListProps> = ({
     setUpdatingStatus(prev => ({ ...prev, [requestId]: true }));
     
     try {
-      const { error } = await supabase
-        .from('maintenance_requests')
-        .update({ status: newStatus })
-        .eq('id', requestId);
-      
-      if (error) throw error;
-      
-      // إذا تم تعيين الحالة كمكتمل، قم بتعيين تاريخ الاكتمال
-      if (newStatus === 'completed') {
-        await supabase
-          .from('maintenance_requests')
-          .update({ completion_date: new Date().toISOString() })
-          .eq('id', requestId);
-      }
-      
-      // إضافة سجل تغيير الحالة
-      await supabase
-        .from('request_status_log')
-        .insert({
-          request_id: requestId,
-          status: newStatus,
-          note: `تم تغيير الحالة إلى ${getStatusText(newStatus)}`,
-        });
-      
-      toast({
-        title: "تم تحديث الحالة",
-        description: `تم تحديث حالة الطلب إلى ${getStatusText(newStatus)}`,
-      });
+      await updateRequestStatus(requestId, newStatus);
       
       if (onStatusChange) {
         onStatusChange(requestId, newStatus);
@@ -114,11 +71,6 @@ const MaintenanceRequestsList: React.FC<MaintenanceRequestsListProps> = ({
       
     } catch (error) {
       console.error('خطأ في تحديث الحالة:', error);
-      toast({
-        title: "خطأ في تحديث الحالة",
-        description: "حدث خطأ أثناء محاولة تحديث حالة الطلب",
-        variant: "destructive"
-      });
     } finally {
       setUpdatingStatus(prev => ({ ...prev, [requestId]: false }));
     }

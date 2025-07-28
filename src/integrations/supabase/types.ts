@@ -14,6 +14,408 @@ export type Database = {
   }
   public: {
     Tables: {
+      attachments: {
+        Row: {
+          description: string | null
+          file_url: string
+          id: string
+          is_deleted: boolean | null
+          request_id: string | null
+          uploaded_at: string | null
+          uploaded_by: string | null
+        }
+        Insert: {
+          description?: string | null
+          file_url: string
+          id?: string
+          is_deleted?: boolean | null
+          request_id?: string | null
+          uploaded_at?: string | null
+          uploaded_by?: string | null
+        }
+        Update: {
+          description?: string | null
+          file_url?: string
+          id?: string
+          is_deleted?: boolean | null
+          request_id?: string | null
+          uploaded_at?: string | null
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attachments_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comments: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: string
+          request_id: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          request_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          request_id?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maintenance_requests: {
+        Row: {
+          actual_cost: number | null
+          assigned_to: string | null
+          attachments: string[] | null
+          building_type: string | null
+          change_log: string | null
+          completion_date: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          estimated_cost: number | null
+          id: string
+          is_deleted: boolean | null
+          issue_type: string | null
+          location: string | null
+          preferred_time: string | null
+          primary_service_id: string | null
+          priority: string | null
+          requester_email: string | null
+          requester_name: string | null
+          requester_phone: string | null
+          scheduled_date: string | null
+          service_type: string | null
+          status: string | null
+          store_id: string | null
+          technical_details: string | null
+          title: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          actual_cost?: number | null
+          assigned_to?: string | null
+          attachments?: string[] | null
+          building_type?: string | null
+          change_log?: string | null
+          completion_date?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          estimated_cost?: number | null
+          id?: string
+          is_deleted?: boolean | null
+          issue_type?: string | null
+          location?: string | null
+          preferred_time?: string | null
+          primary_service_id?: string | null
+          priority?: string | null
+          requester_email?: string | null
+          requester_name?: string | null
+          requester_phone?: string | null
+          scheduled_date?: string | null
+          service_type?: string | null
+          status?: string | null
+          store_id?: string | null
+          technical_details?: string | null
+          title: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          actual_cost?: number | null
+          assigned_to?: string | null
+          attachments?: string[] | null
+          building_type?: string | null
+          change_log?: string | null
+          completion_date?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          estimated_cost?: number | null
+          id?: string
+          is_deleted?: boolean | null
+          issue_type?: string | null
+          location?: string | null
+          preferred_time?: string | null
+          primary_service_id?: string | null
+          priority?: string | null
+          requester_email?: string | null
+          requester_name?: string | null
+          requester_phone?: string | null
+          scheduled_date?: string | null
+          service_type?: string | null
+          status?: string | null
+          store_id?: string | null
+          technical_details?: string | null
+          title?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maintenance_requests_primary_service_id_fkey"
+            columns: ["primary_service_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "maintenance_requests_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      maintenance_requests_archive: {
+        Row: {
+          actual_cost: number | null
+          assigned_to: string | null
+          completion_date: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          estimated_cost: number | null
+          id: string
+          is_deleted: boolean | null
+          primary_service_id: string | null
+          priority: string | null
+          scheduled_date: string | null
+          service_type: string | null
+          status: string | null
+          store_id: string | null
+          title: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          actual_cost?: number | null
+          assigned_to?: string | null
+          completion_date?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          estimated_cost?: number | null
+          id?: string
+          is_deleted?: boolean | null
+          primary_service_id?: string | null
+          priority?: string | null
+          scheduled_date?: string | null
+          service_type?: string | null
+          status?: string | null
+          store_id?: string | null
+          title: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          actual_cost?: number | null
+          assigned_to?: string | null
+          completion_date?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          estimated_cost?: number | null
+          id?: string
+          is_deleted?: boolean | null
+          primary_service_id?: string | null
+          priority?: string | null
+          scheduled_date?: string | null
+          service_type?: string | null
+          status?: string | null
+          store_id?: string | null
+          title?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      maintenance_services: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          estimated_cost: number | null
+          estimated_time: number | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          is_deleted: boolean | null
+          name: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          estimated_cost?: number | null
+          estimated_time?: number | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_deleted?: boolean | null
+          name: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          estimated_cost?: number | null
+          estimated_time?: number | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_deleted?: boolean | null
+          name?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      maintenance_works: {
+        Row: {
+          cost: number | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          is_deleted: boolean | null
+          notes: string | null
+          price: number | null
+          quantity: number | null
+          request_date: string | null
+          request_id: string | null
+          start_date: string | null
+          status: string | null
+          technician_id: string | null
+          title: string
+          total: number | null
+          updated_at: string | null
+          work_type: string | null
+          year: number | null
+        }
+        Insert: {
+          cost?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          is_deleted?: boolean | null
+          notes?: string | null
+          price?: number | null
+          quantity?: number | null
+          request_date?: string | null
+          request_id?: string | null
+          start_date?: string | null
+          status?: string | null
+          technician_id?: string | null
+          title: string
+          total?: number | null
+          updated_at?: string | null
+          work_type?: string | null
+          year?: number | null
+        }
+        Update: {
+          cost?: number | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          is_deleted?: boolean | null
+          notes?: string | null
+          price?: number | null
+          quantity?: number | null
+          request_date?: string | null
+          request_id?: string | null
+          start_date?: string | null
+          status?: string | null
+          technician_id?: string | null
+          title?: string
+          total?: number | null
+          updated_at?: string | null
+          work_type?: string | null
+          year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maintenance_works_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          related_id: string | null
+          related_type: string | null
+          title: string | null
+          user_id: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          related_id?: string | null
+          related_type?: string | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          related_id?: string | null
+          related_type?: string | null
+          title?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
@@ -49,6 +451,245 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      project_files: {
+        Row: {
+          file_url: string
+          id: string
+          name: string
+          project_id: string | null
+          size: number | null
+          type: string | null
+          uploaded_at: string | null
+        }
+        Insert: {
+          file_url: string
+          id?: string
+          name: string
+          project_id?: string | null
+          size?: number | null
+          type?: string | null
+          uploaded_at?: string | null
+        }
+        Update: {
+          file_url?: string
+          id?: string
+          name?: string
+          project_id?: string | null
+          size?: number | null
+          type?: string | null
+          uploaded_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_files_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_progress: {
+        Row: {
+          completed_tasks: number | null
+          created_at: string | null
+          date: string | null
+          id: string
+          notes: string | null
+          overall_progress: number | null
+          project_id: string | null
+          total_tasks: number | null
+          updated_by: string | null
+        }
+        Insert: {
+          completed_tasks?: number | null
+          created_at?: string | null
+          date?: string | null
+          id?: string
+          notes?: string | null
+          overall_progress?: number | null
+          project_id?: string | null
+          total_tasks?: number | null
+          updated_by?: string | null
+        }
+        Update: {
+          completed_tasks?: number | null
+          created_at?: string | null
+          date?: string | null
+          id?: string
+          notes?: string | null
+          overall_progress?: number | null
+          project_id?: string | null
+          total_tasks?: number | null
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_progress_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          area: string | null
+          assigned_to: string | null
+          budget: number | null
+          category: string | null
+          client_name: string | null
+          created_at: string | null
+          description: string | null
+          end_date: string | null
+          engineer_name: string | null
+          id: string
+          image: string | null
+          location: string | null
+          model3d_url: string | null
+          name: string
+          notes: string | null
+          order_number: string | null
+          progress: number | null
+          project_number: string | null
+          start_date: string | null
+          status: string | null
+          tags: string | null
+          work_type: string | null
+        }
+        Insert: {
+          area?: string | null
+          assigned_to?: string | null
+          budget?: number | null
+          category?: string | null
+          client_name?: string | null
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          engineer_name?: string | null
+          id?: string
+          image?: string | null
+          location?: string | null
+          model3d_url?: string | null
+          name: string
+          notes?: string | null
+          order_number?: string | null
+          progress?: number | null
+          project_number?: string | null
+          start_date?: string | null
+          status?: string | null
+          tags?: string | null
+          work_type?: string | null
+        }
+        Update: {
+          area?: string | null
+          assigned_to?: string | null
+          budget?: number | null
+          category?: string | null
+          client_name?: string | null
+          created_at?: string | null
+          description?: string | null
+          end_date?: string | null
+          engineer_name?: string | null
+          id?: string
+          image?: string | null
+          location?: string | null
+          model3d_url?: string | null
+          name?: string
+          notes?: string | null
+          order_number?: string | null
+          progress?: number | null
+          project_number?: string | null
+          start_date?: string | null
+          status?: string | null
+          tags?: string | null
+          work_type?: string | null
+        }
+        Relationships: []
+      }
+      regions: {
+        Row: {
+          code: string | null
+          coordinates: Json | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          level: number
+          name: string
+          parent_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          code?: string | null
+          coordinates?: Json | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          level?: number
+          name: string
+          parent_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          code?: string | null
+          coordinates?: Json | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          level?: number
+          name?: string
+          parent_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "regions_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "regions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      request_status_log: {
+        Row: {
+          changed_at: string | null
+          changed_by: string | null
+          id: string
+          is_deleted: boolean | null
+          note: string | null
+          request_id: string | null
+          status: string
+        }
+        Insert: {
+          changed_at?: string | null
+          changed_by?: string | null
+          id?: string
+          is_deleted?: boolean | null
+          note?: string | null
+          request_id?: string | null
+          status: string
+        }
+        Update: {
+          changed_at?: string | null
+          changed_by?: string | null
+          id?: string
+          is_deleted?: boolean | null
+          note?: string | null
+          request_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "request_status_log_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_requests"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       service_boq_items: {
         Row: {
@@ -247,6 +888,74 @@ export type Database = {
             columns: ["service_request_id"]
             isOneToOne: false
             referencedRelation: "service_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stores: {
+        Row: {
+          area: number | null
+          category: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          email: string | null
+          id: string
+          is_deleted: boolean | null
+          location: string | null
+          map_url: string | null
+          name: string
+          opening_date: string | null
+          phone: string | null
+          region_id: string | null
+          status: string | null
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          area?: number | null
+          category?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          email?: string | null
+          id?: string
+          is_deleted?: boolean | null
+          location?: string | null
+          map_url?: string | null
+          name: string
+          opening_date?: string | null
+          phone?: string | null
+          region_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          area?: number | null
+          category?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          email?: string | null
+          id?: string
+          is_deleted?: boolean | null
+          location?: string | null
+          map_url?: string | null
+          name?: string
+          opening_date?: string | null
+          phone?: string | null
+          region_id?: string | null
+          status?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stores_region_id_fkey"
+            columns: ["region_id"]
+            isOneToOne: false
+            referencedRelation: "regions"
             referencedColumns: ["id"]
           },
         ]

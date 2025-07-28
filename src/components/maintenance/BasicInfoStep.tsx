@@ -1,13 +1,12 @@
 
-import React, { useEffect, useState } from 'react';
-import { MaintenanceRequest, BranchData, ServiceTypeData } from '@/types/maintenance';
+import React from 'react';
+import { MaintenanceRequest } from '@/types/maintenance';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
-import { toast } from "@/components/ui/use-toast";
+import { useMaintenanceData } from './hooks/useMaintenanceData';
 
 interface BasicInfoStepProps {
   formData: MaintenanceRequest;
@@ -16,72 +15,7 @@ interface BasicInfoStepProps {
 }
 
 const BasicInfoStep: React.FC<BasicInfoStepProps> = ({ formData, updateFormData, nextStep }) => {
-  const [branches, setBranches] = useState<BranchData[]>([]);
-  const [serviceTypes, setServiceTypes] = useState<ServiceTypeData[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        // جلب بيانات الفروع
-        const { data: storesData, error: storesError } = await supabase
-          .from('stores')
-          .select('id, name')
-          .eq('is_deleted', false);
-        
-        if (storesError) throw storesError;
-        
-        // جلب أنواع خدمات الصيانة
-        const { data: servicesData, error: servicesError } = await supabase
-          .from('maintenance_services')
-          .select('id, name, description')
-          .eq('is_active', true)
-          .eq('is_deleted', false);
-        
-        if (servicesError) throw servicesError;
-        
-        setBranches(storesData || []);
-        setServiceTypes(servicesData || []);
-
-        // عرض رسالة نجاح
-        toast({
-          title: "تم تحميل البيانات",
-          description: "تم جلب بيانات الفروع وأنواع الخدمات بنجاح",
-          variant: "default",
-        });
-      } catch (error) {
-        console.error('خطأ في جلب البيانات:', error);
-        toast({
-          title: "خطأ في تحميل البيانات",
-          description: "سيتم استخدام البيانات الافتراضية",
-          variant: "destructive",
-        });
-        // في حالة حدوث خطأ، استخدام البيانات الافتراضية
-        setBranches([
-          { id: "1", name: "الرياض" },
-          { id: "2", name: "جدة" },
-          { id: "3", name: "مكة" },
-          { id: "4", name: "المدينة" },
-          { id: "5", name: "الدمام" },
-          { id: "6", name: "الخبر" }
-        ]);
-        
-        setServiceTypes([
-          { id: "1", name: "صيانة عامة" },
-          { id: "2", name: "صيانة كهربائية" },
-          { id: "3", name: "صيانة سباكة" },
-          { id: "4", name: "صيانة تكييف" },
-          { id: "5", name: "صيانة أجهزة" },
-          { id: "6", name: "أخرى" }
-        ]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchData();
-  }, []);
+  const { isLoading, branches, serviceTypes } = useMaintenanceData();
 
   const isFormValid = () => {
     return formData.branch && formData.serviceType && formData.title;
